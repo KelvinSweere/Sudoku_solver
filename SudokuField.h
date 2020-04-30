@@ -70,6 +70,8 @@ public:
 	void printField(void);
 	
 	bool checkRow(int row, int val);	//returns true if val is posible, false if not posible. 
+	bool checkColumn(int row, int val);
+
 };
 
 
