@@ -1,8 +1,8 @@
 #include "SudokuField.h"
 #include <iostream>
 
-int _convertRow2StartValueField(int row);
-int _convertRow2StartValueRow(int row);
+int _convert2StartValueField(int row);
+int _convert2StartValue(int row);
 
 /*
 *	@brief constructor
@@ -41,8 +41,8 @@ int *SudokuField::getRow(int row)
 		int field;
 
 		//get according field and row 
-		field = _convertRow2StartValueField(row);	//0, 3, 6.
-		row = _convertRow2StartValueRow(row);		//0,1,2	
+		field = _convert2StartValueField(row);	//0, 3, 6.
+		row = _convert2StartValue(row);		//0,1,2	
 
 		#ifdef DEBUG
 		std::cout << "field = " << field << " row_start " << row << std::endl;
@@ -75,16 +75,16 @@ int* SudokuField::getColumn(int colum)
 	*/
 	if (colum >= 0 && colum < 9)
 	{
-		static int row_values[9];
+		static int column_values[9];
 
 		int field;
 
 		//get according field and row 
-		field = _convertRow2StartValueField(row);	//0, 3, 6.
-		row = _convertRow2StartValueRow(row);		//0,1,2	
+		field = _convert2StartValueField(colum);	//0, 3, 6.
+		colum = _convert2StartValue(colum);		//0,1,2	
 
 		#ifdef DEBUG
-		std::cout << "field = " << field << " row_start " << row << std::endl;
+		std::cout << "field = " << field << " colum_start " << colum << std::endl;
 		#endif
 
 		const int field_max = field + 3;	//bv 3,4,5
@@ -92,23 +92,23 @@ int* SudokuField::getColumn(int colum)
 
 		for (int i = 0; field < field_max; field++)
 		{
-			for (int y = 0; y < 3; y++)
+			for (int x = 0; x < 3; x++)
 			{
 				#ifdef DEBUG
-				std::cout << "[" << field << "] [" << row << "] [" << y << "]" << std::endl;
+				std::cout << "[" << field << "] [" << colum << "] [" << y << "]" << std::endl;
 				#endif
-				colum[i] = getDataFromField(field, x, colum);
+				column_values[i] = getDataFromField(field, x, colum);
 				i++;
 				//-------------------------------------------------
 			}
 		}
-		return colum;
+		return column_values;
 	}
 	else
 		std::cout << "Wrong colum number!" << std::endl;
 }
 
-int _convertRow2StartValueField(int row)
+int _convert2StartValueField(int row)
 {
 	int field;
 	if (row < 3)		field = 0;		//0,1,2
@@ -124,7 +124,7 @@ int _convertRow2StartValueField(int row)
 /*
 * Tested. Doesn't make the situation better. 
 */
-int _convertRow2StartValueRow(int row)
+int _convert2StartValue(int row)
 {
 	int row_start = 0;
 
@@ -151,6 +151,7 @@ void SudokuField::printField(void)
 		for (int i = 0; i < 9; i++)
 		{
 			ar[i] = (int)*(parray + i);
+
 			if (i % 3 == 0 && i != 0)
 				std::cout << " || ";
 
@@ -166,6 +167,5 @@ void SudokuField::printField(void)
 		}
 		std::cout << std::endl;
 	}
-	std::cout << std::endl;
-	
+		
 }
