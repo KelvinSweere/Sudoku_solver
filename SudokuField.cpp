@@ -3,6 +3,7 @@
 
 int _convert2StartValueField(int row);
 int _convert2StartValue(int row);
+bool _checkIfDataIsInArray(int* pdata, int val);
 
 /*
 *	@brief constructor
@@ -12,6 +13,9 @@ SudokuField::SudokuField()
 	std::cout << "Sudokufield is aangemaakt\n\n";
 }
 
+/*
+
+*/
 void SudokuField::setDataToField(int field, int row, int column)
 {
 	SudokuField::data[field][row][column];
@@ -23,11 +27,43 @@ int SudokuField::getDataFromField(int field, int row, int column)
 	return SudokuField::data[field][row][column];	//field, x, y
 }
 
+
+/*
+	@brief checks if number is in the row. Returns true if it's posible to place that number, false if not.
+*/
 bool SudokuField::checkRow(int row, int val)
 {
 	//algortime.
+	int* pdata = SudokuField::getRow(row);
+	return _checkIfDataIsInArray(pdata, val );
+
+}
+
+bool SudokuField::checkColumn(int row, int val)
+{
+	//algortime.
+	int* pdata = SudokuField::getColumn(row);
+	return _checkIfDataIsInArray(pdata, val);
+
+}
+
+/*
+	@brief checks if param val is in the pdata array. Returns false if it's minimal one time in the array. 
+	Returns true if it is still posible to place that number.
+*/
+bool _checkIfDataIsInArray(int* pdata, int val)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		std::cout << *(pdata + i) << " ";
+
+		if (*(pdata + i) == val)
+			return false;
+	}
+
 	return true;
 }
+
 
 int *SudokuField::getRow(int row)
 {
@@ -120,10 +156,6 @@ int _convert2StartValueField(int row)
 	return field;
 }
 
-
-/*
-* Tested. Doesn't make the situation better. 
-*/
 int _convert2StartValue(int row)
 {
 	int row_start = 0;
@@ -136,7 +168,6 @@ int _convert2StartValue(int row)
 
 	return row_start;
 }
-
 
 void SudokuField::printField(void)
 {
