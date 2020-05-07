@@ -61,16 +61,24 @@ private:
 	};
 
 public:
-	SudokuField();
-	void setDataToField(int field, int row, int column);
+	SudokuField(std::string name);
+	void setDataToField(int field, int row, int column, int val);
+	void setRow(int row, int* pdata);
+	void setCompleteFieldFromFile(std::string name);
+
 	int getDataFromField(int field, int row, int column);
 
 	int* getRow(int row);
 	int* getColumn(int colum);
+	int* getField(int field);
+
+
+
 	void printField(void);
 	
 	bool checkRow(int row, int val);	//returns true if val is posible, false if not posible. 
 	bool checkColumn(int row, int val);
+	bool checkField(int field, int val);
 
 };
 

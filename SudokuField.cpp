@@ -1,5 +1,7 @@
 #include "SudokuField.h"
 #include <iostream>
+#include <fstream>
+
 
 int _convert2StartValueField(int row);
 int _convert2StartValue(int row);
@@ -8,17 +10,19 @@ bool _checkIfDataIsInArray(int* pdata, int val);
 /*
 *	@brief constructor
 */
-SudokuField::SudokuField()
+SudokuField::SudokuField(std::string name)
 {
 	std::cout << "Sudokufield is aangemaakt\n\n";
+	
+	SudokuField::setCompleteFieldFromFile(name);
 }
 
 /*
 
 */
-void SudokuField::setDataToField(int field, int row, int column)
+void SudokuField::setDataToField(int field, int row, int column, int val)
 {
-	SudokuField::data[field][row][column];
+	SudokuField::data[field][row][column] = val;
 }
 
 
@@ -27,6 +31,53 @@ int SudokuField::getDataFromField(int field, int row, int column)
 	return SudokuField::data[field][row][column];	//field, x, y
 }
 
+void SudokuField::setCompleteFieldFromFile(std::string name)
+{
+	std::ifstream myfile;
+	myfile.open(name);
+
+	char line[24];
+
+	static int data[9];
+
+
+	if (myfile)  // same as: if (myfile.good())
+	{
+		int row = 0;
+		bool add_row = false;
+		while (myfile.getline(line, 24))  // same as: while (getline( myfile, line ).good())
+		{
+			//std::cout << line << "\n";
+			for (int x = 0, i = 0; x < 24; x += 8)
+			{
+				for (int y = 1; y < 6; y += 2)
+				{
+					if (line[x + y] != '-')
+					{
+						add_row = true;
+						if (line[x + y] == '.')
+							line[x + y] = '0';
+
+						data[i] = (int)line[x + y] - '0';
+						i++;
+					}
+					else add_row = false;
+
+				}
+			}
+
+			if (add_row)
+			{
+				SudokuField::setRow(row, data);
+
+				row++;
+			}
+
+		}
+
+		myfile.close();
+	}
+}
 
 /*
 	@brief checks if number is in the row. Returns true if it's posible to place that number, false if not.
@@ -47,21 +98,30 @@ bool SudokuField::checkColumn(int row, int val)
 
 }
 
+
+bool SudokuField::checkField(int field, int val)
+{
+	int* pdata = SudokuField::getField(field);
+	return _checkIfDataIsInArray(pdata, val);	//1 if it's already in, 0 if not. 
+}
+
+
 /*
 	@brief checks if param val is in the pdata array. Returns false if it's minimal one time in the array. 
-	Returns true if it is still posible to place that number.
 */
 bool _checkIfDataIsInArray(int* pdata, int val)
 {
 	for (int i = 0; i < 9; i++)
 	{
+		#ifdef DEBUG
 		std::cout << *(pdata + i) << " ";
+		#endif	
 
-		if (*(pdata + i) == val)
-			return false;
+		if ((int)*(pdata + i) == val)
+			return true;
 	}
 
-	return true;
+	return false;
 }
 
 
@@ -101,7 +161,49 @@ int *SudokuField::getRow(int row)
 		return row_values;
 	}
 	else
+	{
 		std::cout << "Wrong row number!" << std::endl;
+		return NULL;
+	}
+}
+
+void SudokuField::setRow(int row, int* pdata)
+{
+	/*
+	Row 0 -> 8
+	*/
+	if (row >= 0 && row < 9)
+	{
+		static int row_values[9];
+
+		int field;
+
+		//get according field and row 
+		field = _convert2StartValueField(row);	//0, 3, 6.
+		row = _convert2StartValue(row);		//0,1,2	
+
+		#ifdef DEBUG
+		std::cout << "field = " << field << " row_start " << row << std::endl;
+		#endif
+
+		const int field_max = field + 3;	//bv 3,4,5
+
+		for (int i=0; field < field_max; field++)
+		{
+			for (int y = 0; y < 3; y++, i++)
+			{
+				#ifdef DEBUG
+				std::cout << "[" << field << "] [" << row << "] [" << y << "]" << std::endl;
+				#endif
+				SudokuField::setDataToField(field, row, y, (int)pdata[i]);
+				//-------------------------------------------------
+			}
+		}
+	}
+	else
+	{
+		std::cout << "Wrong row number!" << std::endl;
+	}
 }
 
 int* SudokuField::getColumn(int colum)
@@ -141,7 +243,48 @@ int* SudokuField::getColumn(int colum)
 		return column_values;
 	}
 	else
+	{
 		std::cout << "Wrong colum number!" << std::endl;
+		return NULL;
+	}
+}
+
+int* SudokuField::getField(int field)
+{
+	/*
+	Column 0 -> 8
+	*/
+	if (field >= 0 && field < 9)
+	{
+		static int column_values[9];
+
+		//get according field and row 
+		
+		#ifdef DEBUG	
+		std::cout << "field = " << field << " colum_start " << colum << std::endl;
+		#endif
+
+		int i = 0;
+
+		for (int y = 0; y < 3; y++)
+		{
+			for (int x = 0; x < 3; x++)
+			{
+			#ifdef DEBUG
+				std::cout << "[" << field << "] [" << colum << "] [" << y << "]" << std::endl;
+			#endif
+				column_values[i] = SudokuField::getDataFromField(field, x, y);
+				i++;
+				//-------------------------------------------------
+			}
+		}
+		return column_values;
+	}
+	else
+	{
+		std::cout << "Wrong colum number!" << std::endl;
+		return NULL;
+	}
 }
 
 int _convert2StartValueField(int row)
