@@ -3,10 +3,6 @@
 #include <fstream>
 
 
-int _convert2StartValueField(int row);
-int _convert2StartValue(int row);
-bool _checkIfDataIsInArray(int* pdata, int val);
-
 /*
 *	@brief constructor
 */
@@ -17,20 +13,19 @@ SudokuField::SudokuField(std::string name)
 	SudokuField::setCompleteFieldFromFile(name);
 }
 
-/*
 
+//---------------------SETTERS---------------------
+/*
+* @brief Set value to 3D space of the object.
 */
 void SudokuField::setDataToField(int field, int row, int column, int val)
 {
 	SudokuField::data[field][row][column] = val;
 }
 
-
-int SudokuField::getDataFromField(int field, int row, int column)
-{
-	return SudokuField::data[field][row][column];	//field, x, y
-}
-
+/*
+* @brief Set complete file from constructor to the datafield.
+*/
 void SudokuField::setCompleteFieldFromFile(std::string name)
 {
 	std::ifstream myfile;
@@ -80,93 +75,8 @@ void SudokuField::setCompleteFieldFromFile(std::string name)
 }
 
 /*
-	@brief checks if number is in the row. Returns true if it's posible to place that number, false if not.
+* @brief Set row to the object.
 */
-bool SudokuField::checkRow(int row, int val)
-{
-	//algortime.
-	int* pdata = SudokuField::getRow(row);
-	return _checkIfDataIsInArray(pdata, val );
-
-}
-
-bool SudokuField::checkColumn(int row, int val)
-{
-	//algortime.
-	int* pdata = SudokuField::getColumn(row);
-	return _checkIfDataIsInArray(pdata, val);
-
-}
-
-
-bool SudokuField::checkField(int field, int val)
-{
-	int* pdata = SudokuField::getField(field);
-	return _checkIfDataIsInArray(pdata, val);	//1 if it's already in, 0 if not. 
-}
-
-
-/*
-	@brief checks if param val is in the pdata array. Returns false if it's minimal one time in the array. 
-*/
-bool _checkIfDataIsInArray(int* pdata, int val)
-{
-	for (int i = 0; i < 9; i++)
-	{
-		#ifdef DEBUG
-		std::cout << *(pdata + i) << " ";
-		#endif	
-
-		if ((int)*(pdata + i) == val)
-			return true;
-	}
-
-	return false;
-}
-
-
-int *SudokuField::getRow(int row)
-{
-	/*
-	Row 0 -> 8
-	*/
-	if (row >= 0 && row < 9)
-	{
-		static int row_values[9];
-
-		int field;
-
-		//get according field and row 
-		field = _convert2StartValueField(row);	//0, 3, 6.
-		row = _convert2StartValue(row);		//0,1,2	
-
-		#ifdef DEBUG
-		std::cout << "field = " << field << " row_start " << row << std::endl;
-		#endif
-
-		const int field_max = field + 3;	//bv 3,4,5
-
-		for (int i=0; field < field_max; field++)
-		{
-			for (int y = 0; y < 3; y++)
-			{
-				#ifdef DEBUG
-				std::cout << "[" << field << "] [" << row << "] [" << y << "]" << std::endl;
-				#endif
-				row_values[i] = getDataFromField(field, row, y);
-				i++;
-				//-------------------------------------------------
-			}
-		}
-		return row_values;
-	}
-	else
-	{
-		std::cout << "Wrong row number!" << std::endl;
-		return NULL;
-	}
-}
-
 void SudokuField::setRow(int row, int* pdata)
 {
 	/*
@@ -182,19 +92,19 @@ void SudokuField::setRow(int row, int* pdata)
 		field = _convert2StartValueField(row);	//0, 3, 6.
 		row = _convert2StartValue(row);		//0,1,2	
 
-		#ifdef DEBUG
+#ifdef DEBUG
 		std::cout << "field = " << field << " row_start " << row << std::endl;
-		#endif
+#endif
 
 		const int field_max = field + 3;	//bv 3,4,5
 
-		for (int i=0; field < field_max; field++)
+		for (int i = 0; field < field_max; field++)
 		{
 			for (int y = 0; y < 3; y++, i++)
 			{
-				#ifdef DEBUG
+#ifdef DEBUG
 				std::cout << "[" << field << "] [" << row << "] [" << y << "]" << std::endl;
-				#endif
+#endif
 				SudokuField::setDataToField(field, row, y, (int)pdata[i]);
 				//-------------------------------------------------
 			}
@@ -206,6 +116,68 @@ void SudokuField::setRow(int row, int* pdata)
 	}
 }
 
+/*
+int SudokuField::getDataFromXY(int x, int y)	//row, column
+{
+
+	
+	return SudokuField::getDataFromField(field, row, column);
+}
+*/
+
+//---------------------GETTERS---------------------
+/*
+* @brief Get value from the object.
+*/
+int SudokuField::getDataFromField(int field, int row, int column)
+{
+	return SudokuField::data[field][row][column];	//field, x, y
+}
+
+/*
+* @brief Get 9 values that are in the field.
+*/
+int* SudokuField::getField(int field)
+{
+	/*
+	Column 0 -> 8
+	*/
+	if (field >= 0 && field < 9)
+	{
+		static int column_values[9];
+
+		//get according field and row 
+
+#ifdef DEBUG	
+		std::cout << "field = " << field << " colum_start " << colum << std::endl;
+#endif
+
+		int i = 0;
+
+		for (int y = 0; y < 3; y++)
+		{
+			for (int x = 0; x < 3; x++)
+			{
+#ifdef DEBUG
+				std::cout << "[" << field << "] [" << colum << "] [" << y << "]" << std::endl;
+#endif
+				column_values[i] = SudokuField::getDataFromField(field, x, y);
+				i++;
+				//-------------------------------------------------
+			}
+		}
+		return column_values;
+	}
+	else
+	{
+		std::cout << "Wrong colum number!" << std::endl;
+		return NULL;
+	}
+}
+
+/*
+* @brief Get 9 values that are in the column.
+*/
 int* SudokuField::getColumn(int colum)
 {
 	/*
@@ -221,20 +193,20 @@ int* SudokuField::getColumn(int colum)
 		field = _convert2StartValueField(colum);	//0, 3, 6.
 		colum = _convert2StartValue(colum);		//0,1,2	
 
-		#ifdef DEBUG
+#ifdef DEBUG
 		std::cout << "field = " << field << " colum_start " << colum << std::endl;
-		#endif
+#endif
 
 		const int field_max = field + 3;	//bv 3,4,5
-		
+
 
 		for (int i = 0; field < field_max; field++)
 		{
 			for (int x = 0; x < 3; x++)
 			{
-				#ifdef DEBUG
+#ifdef DEBUG
 				std::cout << "[" << field << "] [" << colum << "] [" << y << "]" << std::endl;
-				#endif
+#endif
 				column_values[i] = getDataFromField(field, x, colum);
 				i++;
 				//-------------------------------------------------
@@ -249,75 +221,118 @@ int* SudokuField::getColumn(int colum)
 	}
 }
 
-int* SudokuField::getField(int field)
+/*
+* @brief Get 9 values that are in the row.
+*/
+int* SudokuField::getRow(int row)
 {
 	/*
-	Column 0 -> 8
+	Row 0 -> 8
 	*/
-	if (field >= 0 && field < 9)
+	if (row >= 0 && row < 9)
 	{
-		static int column_values[9];
+		static int row_values[9];
+
+		int field;
 
 		//get according field and row 
-		
-		#ifdef DEBUG	
-		std::cout << "field = " << field << " colum_start " << colum << std::endl;
-		#endif
+		field = _convert2StartValueField(row);	//0, 3, 6.
+		row = _convert2StartValue(row);		//0,1,2	
 
-		int i = 0;
+#ifdef DEBUG
+		std::cout << "field = " << field << " row_start " << row << std::endl;
+#endif
 
-		for (int y = 0; y < 3; y++)
+		const int field_max = field + 3;	//bv 3,4,5
+
+		for (int i = 0; field < field_max; field++)
 		{
-			for (int x = 0; x < 3; x++)
+			for (int y = 0; y < 3; y++)
 			{
-			#ifdef DEBUG
-				std::cout << "[" << field << "] [" << colum << "] [" << y << "]" << std::endl;
-			#endif
-				column_values[i] = SudokuField::getDataFromField(field, x, y);
+#ifdef DEBUG
+				std::cout << "[" << field << "] [" << row << "] [" << y << "]" << std::endl;
+#endif
+				row_values[i] = getDataFromField(field, row, y);
 				i++;
 				//-------------------------------------------------
 			}
 		}
-		return column_values;
+		return row_values;
 	}
 	else
 	{
-		std::cout << "Wrong colum number!" << std::endl;
+		std::cout << "Wrong row number!" << std::endl;
 		return NULL;
 	}
 }
 
-int _convert2StartValueField(int row)
-{
-	int field;
-	if (row < 3)		field = 0;		//0,1,2
-	else if (row >= 3 && row < 6)	field = 3;	//3,4,6
-	else if (row >= 6 && row < 9)	field = 6;	//6,7,8
-	else
-		std::cout << "Row is out of boundry, because row = " << row << std::endl;
+//--------------------CHECKERS--------------------
 
-	return field;
+//TODO: think of a strategy how to use the checkers...
+bool SudokuField::checkFieldAvailability(int field, int val)
+{
+	if (SudokuField::checkField(field, val))
+		std::cout << "val = " << val << " is in Field #" << field << std::endl;
+	else
+		std::cout << "val = " << val << " is NOT in Field #" << field << std::endl;
+
+	return (SudokuField::checkField(field, val)) ? true : false;
 }
 
-int _convert2StartValue(int row)
+bool SudokuField::checkFieldFromXY(int x, int y, int val)
 {
-	int row_start = 0;
+	int* pdata;
+	pdata = _convXY2Object(x, y);
 
-	if		(row == 2	|| row == 5 || row == 8)	row_start = 2;
-	else if (row == 1	|| row == 4 || row == 7)	row_start = 1;
-	else if (row == 0	|| row == 3 || row == 6)	row_start = 0;
-	else
-		std::cout << "Row is out of boundry, because row = " << row << std::endl;
+	int field = *(pdata);
+	int row = *(pdata + 1);
+	int column = *(pdata + 2);
 
-	return row_start;
+	return 1;
 }
 
+/*
+	@brief checks if number is in the row. Returns true if it's posible to place that number, false if not.
+*/
+bool SudokuField::checkRow(int row, int val)
+{
+	//algortime.
+	int* pdata = SudokuField::getRow(row);
+	return _checkIfDataIsInArray(pdata, val);
+
+}
+
+/*
+	@brief checks if number is in the field. Returns true if it's posible to place that number, false if not.
+*/
+bool SudokuField::checkField(int field, int val)
+{
+	int* pdata = SudokuField::getField(field);
+	return _checkIfDataIsInArray(pdata, val);	//1 if it's already in, 0 if not. 
+}
+
+/*
+	@brief checks if number is in the column. Returns true if it's posible to place that number, false if not.
+*/
+bool SudokuField::checkColumn(int row, int val)
+{
+	//algortime.
+	int* pdata = SudokuField::getColumn(row);
+	return _checkIfDataIsInArray(pdata, val);
+
+}
+
+
+//--------------------FUNCTIONAL--------------------
+/*
+* @brief prints complete field with current data.
+*/
 void SudokuField::printField(void)
 {
 	static int ar[9];
-	int *parray;
-	
-	
+	int* parray;
+
+
 	for (int row_num = 0; row_num < 9; row_num++)
 	{
 		parray = SudokuField::getRow(row_num);
@@ -333,7 +348,7 @@ void SudokuField::printField(void)
 		}
 
 		//print vertical lines
-		if ((row_num+1) % 3 == 0 && row_num != 8)
+		if ((row_num + 1) % 3 == 0 && row_num != 8)
 		{
 			std::cout << std::endl;
 			for (int i = 0; i < 25; i++)
@@ -341,5 +356,6 @@ void SudokuField::printField(void)
 		}
 		std::cout << std::endl;
 	}
-		
+
 }
+

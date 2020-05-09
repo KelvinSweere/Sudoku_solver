@@ -8,57 +8,17 @@
 
 #include <iostream>
 
+int _convert2StartValueField(int row);
+int _convert2StartValue(int val);
+bool _checkIfDataIsInArray(int* pdata, int val);
+
+
 class SudokuField
 {
 private:
 	int tmp;
 
-	int data[9][3][3] = {
-		//0
-		{{1, 2, 3},
-		{2, 2, 2},
-		{0, 0, 0}},
-
-		//1
-		{{4, 5, 6},
-		{2, 2, 2},
-		{0, 0, 0}},
-
-		//2
-		{{7, 8, 9},
-		{2, 2, 2},
-		{0, 5, 0}},
-
-		//3
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}},
-
-		//4
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}},
-
-		//5
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}},
-
-		//6
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}},
-
-		//7
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}},
-
-		//8
-		{{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}}
-	};
+	int data[9][3][3];
 
 public:
 	SudokuField(std::string name);
@@ -72,13 +32,18 @@ public:
 	int* getColumn(int colum);
 	int* getField(int field);
 
-
+	int getDataFromXY(int x, int y);	//row, column
+	bool checkFieldFromXY(int x, int y, int val);
 
 	void printField(void);
 	
 	bool checkRow(int row, int val);	//returns true if val is posible, false if not posible. 
 	bool checkColumn(int row, int val);
 	bool checkField(int field, int val);
+
+	bool checkFieldAvailability(int field, int val);
+
+	int* _convXY2Object(int x, int y);
 
 };
 
