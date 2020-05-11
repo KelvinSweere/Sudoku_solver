@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 
+int _conv_X_or_Y_2_3DObject(int val);
 
 /*
 *	@brief constructor
@@ -117,13 +118,58 @@ void SudokuField::setRow(int row, int* pdata)
 }
 
 /*
-int SudokuField::getDataFromXY(int x, int y)	//row, column
+* @brief convert x,y to 3D object. E.g. 6 -> 0, 7 -> 1, 8 -> 2.
+*/
+int _conv_X_or_Y_2_3DObject(int val)
+{
+	int section;
+	if (val < 3)
+		section = 0;
+	else if (val < 6)
+		section = 1;
+	else
+		section = 2;
+
+	return (val - (section * 3));
+}
+
+int _conv_X_or_y_2_Field_value(int x, int y)
 {
 
-	
+	//conv x,y to field
+	int field;
+	if (x < 3)
+		field = 0;
+	else if (x < 6)
+		field = 3;
+	else
+		field = 6;
+
+
+	if (y < 3)
+		field += 0;
+	else if (y < 6)
+		field += 1;
+	else
+		field += 2;
+	return field;
+}
+/*
+* @brief Convert X,Y values to 3D space inside the object.
+* @param x range between 0,8.
+* @param y range between 0,8.
+*/
+int SudokuField::getDataFromXY(int x, int y)	//row, column
+{
+	int field = _conv_X_or_y_2_Field_value(x, y);
+	int row = _conv_X_or_Y_2_3DObject(x);
+	int column= _conv_X_or_Y_2_3DObject(y);
+
+	//std::cout << "x = " << row << " y = " << column << " field = " << field << std::endl;
+
 	return SudokuField::getDataFromField(field, row, column);
 }
-*/
+
 
 //---------------------GETTERS---------------------
 /*
@@ -279,16 +325,26 @@ bool SudokuField::checkFieldAvailability(int field, int val)
 	return (SudokuField::checkField(field, val)) ? true : false;
 }
 
+/*
+* @brief checks if value from x,y is in the correct field.
+*/
 bool SudokuField::checkFieldFromXY(int x, int y, int val)
 {
-	int* pdata;
-	pdata = _convXY2Object(x, y);
+	//check if value is in # field.
 
-	int field = *(pdata);
-	int row = *(pdata + 1);
-	int column = *(pdata + 2);
+	//conv x,y to field num
+	int field = _conv_X_or_y_2_Field_value(x, y);
+	int tel = 0;
+	for (int row = 0; row < 3; row++)
+	{
+		for (int column = 0; column < 3; column++)
+		{
+			if (SudokuField::getDataFromField(field, row, column) == val)
+				return false;
+		}
+	}
 
-	return 1;
+	return true;
 }
 
 /*
@@ -358,4 +414,3 @@ void SudokuField::printField(void)
 	}
 
 }
-

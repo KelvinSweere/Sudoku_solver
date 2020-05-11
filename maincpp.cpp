@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
 
 	//2D space...
 	
+	//while no zeros in every field, or 1k tries... 
 	for (int x = 0; x < 9; x++)
 	{
 		for (int y = 0; y < 9; y++)
@@ -25,7 +26,6 @@ int main(int argc, char* argv[])
 						//x = 0 -> 1,2
 						//x = 1 -> 0,2
 						//x = 2 -> 0,1
-							
 						//check if the value is in one of the other x's
 
 																   

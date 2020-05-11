@@ -50,39 +50,3 @@ bool _checkIfDataIsInArray(int* pdata, int val)
 	return false;
 }
 
-int* SudokuField::_convXY2Object(int x, int y)
-{
-	static int field = 0;
-	if (x < 3)
-	{
-		field = 0;
-	}
-	else if (x < 6)
-	{
-		field = 3;
-	}
-	else if (x < 9)
-	{
-		field = 6;
-
-	}
-	static int row = _convert2StartValue(x);		//0,1,2	
-
-
-	if (y < 3)
-		field += 0;
-	else if (y < 6)
-		field += 1;
-	else if (y < 9)
-		field += 2;
-
-	static int column = _convert2StartValue(y);
-
-	static int* pdata;
-	*(pdata + 0) = field;
-	*(pdata + 1) = x;
-	*(pdata + 2) = y;
-
-	return pdata;
-
-}
